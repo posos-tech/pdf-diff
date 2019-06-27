@@ -128,12 +128,10 @@ def mark_eol_hyphen(box):
 
 
 def perform_diff(doc1text, doc2text):
-    import diff_match_patch
-    return diff_match_patch.diff(
-        doc1text,
-        doc2text,
-        timelimit=0,
-        checklines=False)
+    import diff_match_patch as dmp_module
+    dmp = dmp_module.diff_match_patch()
+
+    return dmp.diff_main(doc1text, doc2text)
 
 
 def process_hunks(hunks, boxes):
@@ -142,18 +140,18 @@ def process_hunks(hunks, boxes):
     offsets = [0, 0]
     changes = []
     for op, oplen in hunks:
-        if op == "=":
+        if op == 0:
             # This hunk represents a region in the two text documents that are
             # in common. So nothing to process but advance the counters.
-            offsets[0] += oplen;
-            offsets[1] += oplen;
+            offsets[0] += oplen
+            offsets[1] += oplen
 
             # Put a marker in the changes so we can line up equivalent parts
             # later.
             if len(changes) > 0 and changes[-1] != '*':
-                changes.append("*");
+                changes.append("*")
 
-        elif op in ("-", "+"):
+        elif op in (-1, 1):
             # This hunk represents a region of text only in the left (op == "-")
             # or right (op == "+") document. The change is oplen chars long.
             idx = 0 if (op == "-") else 1
