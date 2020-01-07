@@ -140,6 +140,7 @@ def mark_eol_hyphen(box):
 def perform_diff(doc1text, doc2text):
     import diff_match_patch as dmp_module
     dmp = dmp_module.diff_match_patch()
+    dmp.Diff_Timeout = 60
 
     return dmp.diff_main(doc1text, doc2text)
 
